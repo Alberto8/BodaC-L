@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Operación Valencia · El Botín Nupcial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800&family=Azeret+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root{
+    --bg:#020617;
+    --panel:#0f172a;
+    --panel-2:#111c34;
+    --line:#1e293b;
+    --line-soft:#334155;
+    --neon:#39ff14;
+    --neon-dim:rgba(57,255,20,.12);
+    --green-ok:#22c55e;
+    --red:#ef4444;
+    --txt:#f8fafc;
+    --muted:#64748b;
+    --soft:#cbd5e1;
+    --mono:'Azeret Mono',ui-monospace,monospace;
+    --sans:'Urbanist',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);color:var(--txt);font-family:var(--sans);
+    display:flex;justify-content:center;min-height:100vh;
+    background-image:
+      radial-gradient(circle at 15% -5%,rgba(57,255,20,.07),transparent 38%),
+      radial-gradient(circle at 90% 105%,rgba(57,255,20,.05),transparent 42%);
+    background-attachment:fixed;
+  }
+  .phone{
+    width:100%;max-width:480px;background:var(--panel);min-height:100vh;
+    position:relative;padding:0 0 96px;display:flex;flex-direction:column;
+    border-left:1px solid var(--line);border-right:1px solid var(--line);
+    overflow:hidden;
+  }
+  /* scanlines sutiles de "archivo" */
+  .phone::after{
+    content:"";position:absolute;inset:0;pointer-events:none;z-index:5;
+    background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(0,0,0,.08) 2px 3px);
+    mix-blend-mode:overlay;opacity:.45;
+  }
+
+  /* ---------- CABECERA EXPEDIENTE ---------- */
+  .file-bar{
+    position:sticky;top:0;z-index:6;display:flex;align-items:center;justify-content:space-between;
+    background:rgba(2,6,23,.92);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);padding:12px 18px;
+    font-family:var(--mono);font-size:11px;letter-spacing:1.5px;color:var(--neon);text-transform:uppercase;
+  }
+  .file-bar .left{display:flex;align-items:center;gap:8px;}
+  .file-bar .dot{width:7px;height:7px;border-radius:50%;background:var(--neon);box-shadow:0 0 8px var(--neon);}
+  .rec{color:var(--red);animation:blink 1.3s steps(2,end) infinite;}
+  @keyframes blink{50%{opacity:.25}}
+
+  .content{padding:22px 22px 0;position:relative;z-index:1;}
+  .screen{display:none;flex-direction:column;gap:18px;animation:fade .35s ease;}
+  .screen.active{display:flex;}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  /* ---------- TIPOGRAFÍA ---------- */
+  h1{font-size:2.1rem;font-weight:800;line-height:1.05;text-transform:uppercase;letter-spacing:.5px;}
+  h1 span,h2 span{color:var(--neon);}
+  h2{font-size:1.55rem;font-weight:700;line-height:1.15;}
+  p{color:var(--soft);line-height:1.65;font-size:1.02rem;}
+  .lead{color:var(--muted);}
+  strong{color:var(--txt);font-weight:700;}
+  .key{color:var(--neon);font-weight:700;}
+
+  /* ---------- INICIO ---------- */
+  .hero{text-align:center;padding:18px 0 6px;}
+  .stamp{
+    display:inline-block;border:2px solid var(--red);color:var(--red);
+    padding:5px 16px;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:3px;
+    transform:rotate(-5deg);border-radius:5px;text-transform:uppercase;opacity:.9;margin-bottom:18px;
+  }
+  .hero h1{text-shadow:0 0 18px rgba(57,255,20,.35);}
+  .hero-sub{font-family:var(--mono);font-size:12px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-top:6px;}
+  .seal{font-size:4.6rem;color:var(--neon);text-shadow:0 0 22px rgba(57,255,20,.45);margin:14px 0 4px;}
+  .brief{
+    border:1px solid var(--line);border-left:3px solid var(--neon);background:var(--panel-2);
+    border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:11px;text-align:left;
+  }
+  .brief p{font-size:1rem;}
+
+  .progress-card{border:1px solid var(--line);background:var(--panel-2);border-radius:12px;padding:18px;text-align:center;}
+  .progress-card .lbl{font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;}
+  .bar{height:14px;background:#0a1326;border:1px solid var(--line);border-radius:30px;overflow:hidden;}
+  .bar > span{display:block;height:100%;width:0;background:linear-gradient(90deg,#1f7a0d,var(--neon));box-shadow:0 0 12px var(--neon);transition:width .55s cubic-bezier(.2,.8,.2,1);}
+  .count{margin-top:12px;font-family:var(--mono);font-size:1.7rem;font-weight:700;color:var(--neon);text-shadow:0 0 10px rgba(57,255,20,.4);}
+  .count small{font-size:.85rem;color:var(--muted);}
+  .resume-tip{margin-top:12px;font-size:.85rem;color:var(--muted);line-height:1.55;}
+
+  /* ---------- PASOS ---------- */
+  .badge{
+    align-self:flex-start;background:var(--neon-dim);color:var(--neon);
+    font-family:var(--mono);font-size:.72rem;font-weight:700;letter-spacing:2px;
+    padding:5px 13px;border-radius:30px;border:1px solid var(--line);
+  }
+  .step-title{display:flex;align-items:center;gap:13px;}
+  .step-title .ic{
+    flex-shrink:0;width:48px;height:48px;border:2px solid var(--neon);border-radius:11px;
+    display:flex;align-items:center;justify-content:center;font-size:1.25rem;color:var(--neon);
+    text-shadow:0 0 10px rgba(57,255,20,.5);
+  }
+  .slide-image{width:100%;height:190px;border-radius:14px;overflow:hidden;border:1px solid var(--line-soft);position:relative;}
+  .slide-image img{width:100%;height:100%;object-fit:cover;filter:saturate(1.05) contrast(1.05);}
+  .slide-image::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(2,6,23,.55));}
+  .clue{border:1px solid var(--line);background:var(--panel-2);border-radius:12px;padding:16px;}
+  .clue .tag{font-family:var(--mono);font-size:.72rem;letter-spacing:2px;color:var(--neon);text-transform:uppercase;display:block;margin-bottom:8px;}
+  .clue p{font-size:1rem;}
+  .target{margin-top:13px;padding-top:13px;border-top:1px dashed var(--line-soft);display:flex;gap:9px;align-items:flex-start;font-size:.95rem;color:var(--soft);}
+  .target i{color:var(--neon);margin-top:3px;}
+
+  .btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;border-radius:10px;font-family:var(--sans);font-weight:700;font-size:1rem;border:none;cursor:pointer;transition:.18s;text-decoration:none;}
+  .btn-maps{background:#1e293b;color:var(--txt);border:1px solid var(--line-soft);}
+  .btn-maps:active{background:#334155;transform:scale(.98);}
+
+  .validation-box{background:#0a1326;border:1px solid var(--line);border-radius:12px;padding:18px;}
+  .validation-box .lbl{font-family:var(--mono);font-size:.78rem;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;}
+  .input-row{display:flex;align-items:center;gap:15px;margin-top:13px;}
+  .code-input{
+    width:108px;height:60px;background:var(--bg);border:2px solid var(--line-soft);border-radius:10px;
+    color:var(--neon);font-family:var(--mono);font-size:1.9rem;font-weight:700;text-align:center;
+    letter-spacing:8px;transition:border-color .2s,box-shadow .2s,background .2s;
+  }
+  .code-input::placeholder{color:#1e3a2a;}
+  .code-input:focus{outline:none;border-color:var(--line-soft);}
+  .code-input.correct{border-color:var(--neon);background:rgba(57,255,20,.06);box-shadow:0 0 16px rgba(57,255,20,.35);}
+  .code-input.wrong{border-color:var(--red);background:rgba(239,68,68,.06);box-shadow:0 0 14px rgba(239,68,68,.3);animation:shake .4s;}
+  .status{display:flex;flex-direction:column;gap:3px;}
+  .status .ico{font-size:1.7rem;opacity:0;transform:scale(.5);transition:.25s;height:0;}
+  .status .ico.show{opacity:1;transform:scale(1);height:auto;}
+  .status .ico.ok{color:var(--green-ok);text-shadow:0 0 10px rgba(34,197,94,.5);}
+  .status .ico.no{color:var(--red);}
+  .status .txt{font-family:var(--mono);font-size:.78rem;line-height:1.3;max-width:150px;}
+  .status .txt.ok{color:var(--green-ok);}
+  .status .txt.no{color:var(--red);}
+  .status .txt.idle{color:var(--muted);}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+
+  /* ---------- COFRE ---------- */
+  .chest-wrap{text-align:center;}
+  .chest{
+    font-size:6rem;color:#e2e8f0;cursor:pointer;display:inline-block;
+    transition:.3s;
+  }
+  .chest.shake{animation:shake .5s;color:var(--red)!important;}
+  .chest.unlock{animation:unlock .9s forwards cubic-bezier(.2,.9,.3,1.4);color:var(--neon)!important;text-shadow:0 0 40px rgba(57,255,20,.7);}
+  @keyframes unlock{0%{transform:scale(1) rotate(0)}45%{transform:scale(1.25) rotate(10deg)}75%{transform:scale(.95) rotate(-6deg)}100%{transform:scale(1.1) rotate(0)}}
+  .chest-tap{font-family:var(--mono);font-size:.78rem;letter-spacing:1px;color:var(--muted);}
+  .chest-msg{margin-top:14px;font-weight:700;font-size:1.05rem;min-height:46px;color:var(--muted);line-height:1.5;padding:0 4px;}
+  .chest-msg.ok{color:var(--green-ok);text-shadow:0 0 8px rgba(34,197,94,.35);}
+  .chest-msg.no{color:var(--red);}
+  .btn-reward{display:none;background:var(--neon);color:#04210a;font-size:1.05rem;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-top:20px;box-shadow:0 0 22px rgba(57,255,20,.5);animation:pop .5s ease;}
+  .btn-reward:active{transform:scale(.97);}
+  @keyframes pop{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+  .mini-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:26px;}
+  .mini{aspect-ratio:1;border:1px solid var(--line);border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;background:var(--panel-2);color:var(--muted);transition:.25s;}
+  .mini i{font-size:1rem;}
+  .mini .n{font-family:var(--mono);font-weight:700;font-size:.95rem;}
+  .mini.done{border-color:var(--neon);color:var(--neon);background:var(--neon-dim);box-shadow:0 0 10px rgba(57,255,20,.15);}
+
+  .reset{background:none;border:none;color:#475569;font-family:var(--mono);font-size:.72rem;text-decoration:underline;cursor:pointer;margin:26px auto 8px;display:block;}
+
+  /* ---------- NAV INFERIOR ---------- */
+  nav{
+    position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;z-index:1000;
+    background:rgba(2,6,23,.95);backdrop-filter:blur(10px);border-top:1px solid var(--line);
+    display:flex;padding:8px 8px;overflow-x:auto;scrollbar-width:none;
+  }
+  nav::-webkit-scrollbar{display:none;}
+  .tab{
+    flex:0 0 auto;min-width:46px;background:none;border:none;color:var(--muted);
+    font-family:var(--mono);font-weight:700;font-size:.85rem;cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    border-radius:9px;padding:8px 8px;position:relative;transition:.18s;
+  }
+  .tab i{font-size:1rem;}
+  .tab span{font-size:.62rem;letter-spacing:.5px;}
+  .tab.active{color:var(--neon);background:var(--neon-dim);}
+  .tab.done{color:var(--green-ok);}
+  .tab.done::after{content:"";position:absolute;top:6px;right:8px;width:7px;height:7px;border-radius:50%;background:var(--green-ok);box-shadow:0 0 6px var(--green-ok);}
+  .tab.chest.ready{color:var(--neon);text-shadow:0 0 8px var(--neon);}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="file-bar">
+    <span class="left"><span class="dot"></span> EXP. CONFIDENCIAL</span>
+    <span class="rec">● REC</span>
+  </div>
+
+  <div class="content">
+
+    <!-- INICIO -->
+    <section class="screen active" id="screen-inicio">
+      <div class="hero">
+        <span class="stamp">Top Secret</span>
+        <h1>Misión: <span>El Botín</span></h1>
+        <div class="hero-sub">Operación Valencia · 8 objetivos</div>
+        <div class="seal"><i class="fa-solid fa-user-secret"></i></div>
+      </div>
+      <div class="brief">
+        <p><span class="key">AGENTES,</span> si leéis esto es que el sobre cayó en buenas manos (o le habéis cogido el móvil a alguien, muy de vosotros).</p>
+        <p>Hay <strong>8 códigos de 2 dígitos</strong> escondidos por Valencia. Encontradlos, tecleadlos aquí y desbloquead el acceso al <span class="key">Botín Final</span>.</p>
+        <p>No hay orden. Empezad por donde os pille más cerca de la próxima caña. Y tranquilos: <strong>la app guarda todo sola</strong>, así que podéis dejarlo a medias hoy y seguir otro día sin perder nada.</p>
+        <p class="lead" style="font-size:.85rem;">Qué hay en el cofre · clasificado. Ni preguntéis. A buscar.</p>
+      </div>
+      <div class="progress-card">
+        <div class="lbl">Expediente completado</div>
+        <div class="bar"><span id="barFill"></span></div>
+        <div class="count"><b id="doneCount">0</b><small>/8 objetivos</small></div>
+        <div class="resume-tip">Toca cualquier objetivo de la barra inferior para empezar.</div>
+      </div>
+    </section>
+
+    <!-- Los 8 pasos + cofre se inyectan aquí -->
+    <div id="dynamic"></div>
+
+  </div>
+
+  <nav id="nav"></nav>
+</div>
+
+<script>
+/* =========================================================
+   ⚠️ CÓMO PONER TU PDF REAL (EL PREMIO):
+   1) Coge tu PDF (la reserva, el vale… lo que sea el botín).
+   2) Conviértelo a Base64:
+      - Web: busca "base64 encode file" (ej. base64.guru) y sube el PDF.
+      - Mac/Linux:  base64 -i premio.pdf -o premio.txt
+      - Windows:    certutil -encode premio.pdf premio.txt
+   3) Copia TODO el churro de texto resultante (sin saltos de línea).
+   4) Pégalo entre las comillas de pdfBase64, manteniendo el prefijo
+      "data:application/pdf;base64," tal cual está.
+   ========================================================= */
+const pdfBase64 = "data:application/pdf;base64,JVBERi0xLjQKMSAwIG9iago8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFI+PgplbmRvYmoKMiAwIG9iago8PC9UeXBlL1BhZ2VzL0tpZHNbMyAwIFJdL0NvdW50IDE+PgplbmRvYmoKMyAwIG9iago8PC9UeXBlL1BhZ2UvUGFyZW50IDIgMCBSL01lZGlhQm94WzAgMCA1OTUgODQyXS9SZXNvdXJjZXM8PC9Gb250PDwvRjEgNCAwIFI+Pj4+L0NvbnRlbnRzIDUgMCBSPj4KZW5kb2JqCjQgMCBvYmoKPDwvVHlwZS9Gb250L1N1YnR5cGUvVHlwZTEvQmFzZUZvbnQvSGVsdmV0aWNhPj4KZW5kb2JqCjUgMCBvYmoKPDwvTGVuZ3RoIDk0Pj4Kc3RyZWFtCkJUCi9GMSAyNCBUZgo3MCA3NTAgVGQKKEVYUEVESUVOVEUgREVTQ0xBU0lGSUNBRE8pIFRqCjAgLTQwIFRkCi9GMSAxNCBUZgooU3VzdGl0dXllIGVzdGUgUERGIHBvciBlbCBwcmVtaW8gcmVhbC4pIFRqCkVUCmVuZHN0cmVhbQplbmRvYmoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDA5IDAwMDAwIG4gCjAwMDAwMDAwNTYgMDAwMDAgbiAKMDAwMDAwMDExMSAwMDAwMCBuIAowMDAwMDAwMjM4IDAwMDAwIG4gCjAwMDAwMDAzMDcgMDAwMDAgbiAKdHJhaWxlcgo8PC9TaXplIDYvUm9vdCAxIDAgUj4+CnN0YXJ0eHJlZgo0NTEKJSVFT0YK";
+
+/* ===== CÓDIGOS CORRECTOS (cámbialos por los reales que pegues en la calle) ===== */
+const STEPS = [
+  { id:1, code:"11", icon:"fa-chess-rook", badge:"Objetivo 01", place:"Torres de Serranos",
+    img:"https://images.unsplash.com/photo-1632371970258-297c9b0e37cc?q=80&w=600&auto=format&fit=crop",
+    maps:"https://maps.google.com/?q=Torres+de+Serranos+Valencia",
+    clue:"Doce siglos enseñando los dientes a quien venía del río, y todavía nadie ha pagado entrada por la cara. Empezamos fuerte.",
+    target:"En la BASE de la farola clásica de hierro que tienes justo enfrente. Agáchate con disimulo, agente." },
+  { id:2, code:"22", icon:"fa-fish", badge:"Objetivo 02", place:"Mercado Central",
+    img:"https://images.unsplash.com/photo-1543083477-4f785aeafaa9?q=80&w=600&auto=format&fit=crop",
+    maps:"https://maps.google.com/?q=Mercado+Central+Valencia",
+    clue:"Catedral del morro y del regateo. Huele a gloria… y a que tú no has desayunado. Sin entrar al edificio.",
+    target:"En los PANELES INFORMATIVOS exteriores de la entrada principal. Sí, esos que nunca lees." },
+  { id:3, code:"33", icon:"fa-water", badge:"Objetivo 03", place:"Plaza de la Virgen",
+    img:"https://images.unsplash.com/photo-1558642084-fd07fae5282e?q=80&w=600&auto=format&fit=crop",
+    maps:"https://maps.google.com/?q=Plaza+de+la+Virgen+Valencia",
+    clue:"El tío tumbado con tridente es el río Turia, rodeado de sus canales. Tú vas rodeado de excusas por llegar tarde.",
+    target:"En la PARTE TRASERA de la fuente del Neptuno de piedra. Dale la vuelta, no muerde." },
+  { id:4, code:"44", icon:"fa-circle-notch", badge:"Objetivo 04", place:"Plaza Redonda",
+    img:"https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?q=80&w=600&auto=format&fit=crop",
+    maps:"https://maps.google.com/?q=Plaza+Redonda+Valencia",
+    clue:"Tan redonda que ni con dos cubatas le encuentras la esquina. El ombligo de Valencia, literal.",
+    target:"En uno de los PILARES DE HIERRO del interior. Toca metal a ver si se te pega algo de listeza." },
+  { id:5, code:"55", icon:"fa-bomb", badge:"Objetivo 05", place:"Torres de Quart",
+    img:"https://images.unsplash.com/photo-1599940824399-b87987ceb72a?q=80&w=600&auto=format&fit=crop",
+    maps:"https://maps.google.com/?q=Torres+de+Quart+Valencia",
+    clue:"Aún tienen las marcas de los cañonazos napoleónicos. Más agujereadas que tus coartadas de los findes.",
+    target:"En la SEÑAL DE TRÁFICO del cruce de peatones principal de enfrente. Mira antes de cruzar, héroe." },
+  { id:6, code:"66", icon:"fa-train", badge:"Objetivo 06", place:"Estación del Norte",
+    img:"https://images.unsplash.com/photo-1624314140469-b3a35bd7cc35?q=80&w=600&auto=format&fit=crop",
+    maps:"https://maps.google.com/?q=Estacion+del+Norte+Valencia",
+    clue:"Modernismo, naranjas de cerámica y gente corriendo a un tren que ya se fue. Como tú con la puntualidad.",
+    target:"En las FAROLAS / SEMÁFOROS de la acera de enfrente. No hace falta comprar billete." },
+  { id:7, code:"77", icon:"fa-leaf", badge:"Objetivo 07", place:"Umbracle · Ciudad de las Artes",
+    img:"https://images.unsplash.com/photo-1512100356356-de1b84283e18?q=80&w=600&auto=format&fit=crop",
+    maps:"https://maps.google.com/?q=Umbracle+Valencia",
+    clue:"El jardín colgante del futuro. Arcos blancos, palmeras y selfies infinitos. Aquí hasta las plantas posan mejor que tú.",
+    target:"En la CARA INTERNA de los maceteros gigantes del inicio del paseo." },
+  { id:8, code:"88", icon:"fa-bridge", badge:"Objetivo 08", place:"Puente de las Flores",
+    img:"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=600&auto=format&fit=crop",
+    maps:"https://maps.google.com/?q=Puente+de+las+Flores+Valencia",
+    clue:"Un puente que va siempre de gala con flores frescas. Más arreglado que tú en una boda media. Última parada.",
+    target:"DETRÁS de los carteles de señalización metálicos del lateral del puente. No la cagues ahora." }
+];
+
+const TOTAL = STEPS.length;
+const LS_KEY = "valencia_botin_v2";
+
+/* Referencias del DOM declaradas arriba: validate() se ejecuta al construir
+   los pasos y necesita que 'nav' ya exista (si no, ReferenceError). */
+const nav = document.getElementById("nav");
+
+/* ---------- PERSISTENCIA ROBUSTA (sobrevive entre días) ---------- */
+function loadState(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  // migración suave desde la versión vieja (claves sueltas), por si jugaron antes
+  const legacy = {};
+  for(let i=1;i<=TOTAL;i++){
+    const v = localStorage.getItem('val_guardada_'+i);
+    if(v) legacy[i] = { value:v };
+  }
+  return legacy;
+}
+let state = loadState();
+function saveState(){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){}
+}
+function isDone(id){
+  const s = state[id];
+  const step = STEPS.find(x=>x.id===id);
+  return !!(s && step && s.value === step.code);
+}
+function doneTotal(){ return STEPS.filter(s=>isDone(s.id)).length; }
+
+/* ---------- CONSTRUIR PASOS ---------- */
+const dynamic = document.getElementById("dynamic");
+STEPS.forEach(s=>{
+  const sec = document.createElement("section");
+  sec.className = "screen";
+  sec.id = "screen-"+s.id;
+  sec.innerHTML = `
+    <span class="badge">${s.badge.toUpperCase()}</span>
+    <div class="step-title">
+      <div class="ic"><i class="fa-solid ${s.icon}"></i></div>
+      <h2>${s.place}</h2>
+    </div>
+    <div class="slide-image"><img src="${s.img}" alt="${s.place}" loading="lazy"></div>
+    <div class="clue">
+      <span class="tag"><i class="fa-solid fa-magnifying-glass"></i> Pista descifrada</span>
+      <p>${s.clue}</p>
+      <div class="target"><i class="fa-solid fa-location-crosshairs"></i><div><strong>Dónde buscar:</strong> ${s.target}</div></div>
+    </div>
+    <a href="${s.maps}" target="_blank" rel="noopener" class="btn btn-maps"><i class="fa-solid fa-location-dot"></i> Abrir ubicación en Maps</a>
+    <div class="validation-box">
+      <div class="lbl">Introduce el código de 2 dígitos</div>
+      <div class="input-row">
+        <input class="code-input" id="input-${s.id}" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="--" autocomplete="off">
+        <div class="status">
+          <i class="fa-solid fa-circle-check ico ok" id="ok-${s.id}"></i>
+          <i class="fa-solid fa-circle-xmark ico no" id="no-${s.id}"></i>
+          <span class="txt idle" id="txt-${s.id}">Esperando código…</span>
+        </div>
+      </div>
+    </div>`;
+  dynamic.appendChild(sec);
+});
+
+/* ---------- COFRE ---------- */
+const chestSec = document.createElement("section");
+chestSec.className = "screen";
+chestSec.id = "screen-cofre";
+chestSec.innerHTML = `
+  <h1>El Cofre del <span>Botín</span></h1>
+  <p class="lead">Cuando los 8 objetivos estén en verde, toca el cofre para forzar la cerradura y acceder al archivo clasificado.</p>
+  <div class="chest-wrap">
+    <i class="fa-solid fa-box-archive chest" id="chest"></i>
+    <div class="chest-tap">Toca el cofre para intentar abrirlo</div>
+    <div class="chest-msg" id="chestMsg">Cofre sellado 🔒 — completa los 8 objetivos primero.</div>
+    <a href="#" id="rewardBtn" class="btn btn-reward"><i class="fa-solid fa-download"></i> Descargar Recompensa</a>
+    <div class="mini-grid" id="miniGrid"></div>
+  </div>
+  <button class="reset" id="resetBtn">Reiniciar partida (borra los códigos guardados)</button>`;
+dynamic.appendChild(chestSec);
+
+/* ---------- VALIDACIÓN ---------- */
+const failMsgs = [
+  "Cofre bloqueado. Te faltan objetivos, agente de pacotilla.",
+  "Ni de coña. Vuelve a la calle a sudar esos códigos.",
+  "El cofre se ríe en tu cara. Faltan pistas.",
+  "Bonito intento. No. Sigue buscando."
+];
+
+STEPS.forEach(s=>{
+  const input = document.getElementById("input-"+s.id);
+  if(state[s.id] && state[s.id].value) input.value = state[s.id].value;
+  validate(s.id, false);
+  input.addEventListener("input", ()=>{
+    input.value = input.value.replace(/\D/g,"").slice(0,2);
+    validate(s.id, true);
+  });
+});
+
+function validate(id, animate){
+  const step = STEPS.find(x=>x.id===id);
+  const input = document.getElementById("input-"+id);
+  const ok = document.getElementById("ok-"+id);
+  const no = document.getElementById("no-"+id);
+  const txt = document.getElementById("txt-"+id);
+  const val = input.value;
+
+  state[id] = { value: val };
+  saveState();
+
+  input.classList.remove("correct","wrong");
+  ok.classList.remove("show"); no.classList.remove("show");
+
+  if(val.length < 2){
+    txt.className = "txt idle";
+    txt.textContent = val.length===0 ? "Esperando código…" : "Falta un dígito, manazas.";
+  } else if(val === step.code){
+    input.classList.add("correct");
+    ok.classList.add("show");
+    txt.className = "txt ok";
+    txt.textContent = "✓ Verificado.";
+  } else {
+    if(animate) input.classList.add("wrong");
+    no.classList.add("show");
+    txt.className = "txt no";
+    txt.textContent = "✗ Ese no es. Espabila.";
+  }
+  updateNav(); updateHome(); updateChest();
+}
+
+/* ---------- NAV ---------- */
+function buildNav(){
+  let html = `<button class="tab" data-go="inicio"><i class="fa-solid fa-house"></i><span>BASE</span></button>`;
+  STEPS.forEach(s=>{
+    html += `<button class="tab" data-go="${s.id}" data-step="${s.id}"><i class="fa-solid ${s.icon}"></i><span>${String(s.id).padStart(2,"0")}</span></button>`;
+  });
+  html += `<button class="tab chest" data-go="cofre"><i class="fa-solid fa-box-archive"></i><span>COFRE</span></button>`;
+  nav.innerHTML = html;
+  nav.querySelectorAll(".tab").forEach(b=> b.addEventListener("click", ()=> go(b.dataset.go, b)));
+}
+function go(target, btn){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById("screen-"+target).classList.add("active");
+  try{ window.scrollTo(0,0); }catch(e){}
+  nav.querySelectorAll(".tab").forEach(b=>b.classList.remove("active"));
+  if(btn) btn.classList.add("active");
+  else { const m = nav.querySelector(`[data-go="${target}"]`); if(m) m.classList.add("active"); }
+}
+function updateNav(){
+  nav.querySelectorAll(".tab[data-step]").forEach(b=>{
+    b.classList.toggle("done", isDone(parseInt(b.dataset.step)));
+  });
+  const c = nav.querySelector(".tab.chest");
+  if(c) c.classList.toggle("ready", doneTotal()===TOTAL);
+}
+
+/* ---------- INICIO ---------- */
+function updateHome(){
+  const d = doneTotal();
+  document.getElementById("doneCount").textContent = d;
+  document.getElementById("barFill").style.width = (d/TOTAL*100)+"%";
+}
+
+/* ---------- COFRE LÓGICA ---------- */
+const chest = document.getElementById("chest");
+const chestMsg = document.getElementById("chestMsg");
+const rewardBtn = document.getElementById("rewardBtn");
+const miniGrid = document.getElementById("miniGrid");
+miniGrid.innerHTML = STEPS.map(s=>`<div class="mini" id="mini-${s.id}"><i class="fa-solid ${s.icon}"></i><span class="n">${String(s.id).padStart(2,"0")}</span></div>`).join("");
+
+function updateChest(){
+  STEPS.forEach(s=>{
+    const m = document.getElementById("mini-"+s.id);
+    if(m) m.classList.toggle("done", isDone(s.id));
+  });
+}
+chest.addEventListener("click", ()=>{
+  const d = doneTotal();
+  if(d === TOTAL){
+    chest.classList.remove("shake");
+    chest.className = "fa-solid fa-box-open chest unlock";
+    chestMsg.className = "chest-msg ok";
+    chestMsg.innerHTML = "🔓 ACCESO CONCEDIDO.<br>Expediente descifrado al completo. El Botín es vuestro.";
+    rewardBtn.style.display = "flex";
+    rewardBtn.href = pdfBase64;
+    rewardBtn.setAttribute("download","Recompensa_Final_Valencia.pdf");
+  } else {
+    chest.className = "fa-solid fa-box-archive chest shake";
+    chestMsg.className = "chest-msg no";
+    chestMsg.textContent = failMsgs[Math.floor(Math.random()*failMsgs.length)] + ` (${d}/${TOTAL})`;
+    setTimeout(()=>chest.classList.remove("shake"), 600);
+  }
+});
+
+/* ---------- RESET ---------- */
+document.getElementById("resetBtn").addEventListener("click", ()=>{
+  if(confirm("¿Reiniciar la gincana? Se borrarán todos los códigos guardados.")){
+    try{
+      localStorage.removeItem(LS_KEY);
+      for(let i=1;i<=TOTAL;i++){ localStorage.removeItem('val_guardada_'+i); localStorage.removeItem('estado_paso_'+i); }
+    }catch(e){}
+    location.reload();
+  }
+});
+
+/* ---------- INIT ---------- */
+buildNav();
+updateNav();
+updateHome();
+updateChest();
+</script>
+</body>
+</html>
